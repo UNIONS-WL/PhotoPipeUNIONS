@@ -24,21 +24,21 @@ ebv = sfd(coords)
 ebv_p = planck(coords)
 
 ebv_col = fits.Column(name='EXTINCTION', format='E', array=ebv)
-ebv_p_col = fits.Column(name='EXTINCTION_PLANCK', format='E', array=ebv_p)
+#ebv_p_col = fits.Column(name='EXTINCTION_PLANCK', format='E', array=ebv_p)
 
-new_cols = fits.ColDefs((ebv_col, ebv_p_col))
+new_cols = fits.ColDefs((ebv_col,)) # ebv_p_col))
 
-print(hdu[1])
-print(hdu[1].data)
-print(hdu[1].columns)
-print
+#print(hdu[1])
+#print(hdu[1].data)
+#print(hdu[1].columns)
+#print
 
 hdu[1] = fits.BinTableHDU.from_columns(cols + new_cols)
 hdu[1].name = 'OBJECTS'
 
-print(hdu[1])
-print(hdu[1].data)
-print(hdu[1].columns)
-print
+#print(hdu[1])
+#print(hdu[1].data)
+#print(hdu[1].columns)
+#print
 
 hdu.writeto(outcat)
