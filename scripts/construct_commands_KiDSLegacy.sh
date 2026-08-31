@@ -704,10 +704,13 @@ do
 	      
 	      echo -n echo Adding E_B-V \;
 	      echo -n echo \;
-	      echo -n @RUNROOT@/INSTALL/anaconda2/bin/python @RUNROOT@/@SCRIPTPATH@/add_extinction_python2.py \
+	      #echo -n @RUNROOT@/INSTALL/anaconda2/bin/python @RUNROOT@/@SCRIPTPATH@/add_extinction_python2.py \
+	      #	   ${mdfield}/${field_name}${suffix}_ugriz.cat_tmp${i}_$$ \
+	      #	   ${mdfield}/${field_name}${suffix}_ugriz.cat_tmp$[$i+1]_$$ \
+	      #	   $RA \;
+	      echo -n python3 @RUNROOT@/@SCRIPTPATH@/add_extinction.py \
 		   ${mdfield}/${field_name}${suffix}_ugriz.cat_tmp${i}_$$ \
-		   ${mdfield}/${field_name}${suffix}_ugriz.cat_tmp$[$i+1]_$$ \
-		   $RA \;
+		   ${mdfield}/${field_name}${suffix}_ugriz.cat_tmp$[$i+1]_$$ \;
 	      
 	      i=$[$i+1]
 	      
@@ -1304,7 +1307,7 @@ for mode in ${MODE}
 do
   if [ "${mode}" = "CHECKFAIL" ]; then
       #### Check for failures in previous processing and delete faulty products.
-      echo bash @RUNROOT@/@SCRIPTPATH@/check_fail.sh /arc/projects/unions/catalogues/unions/GAaP_photometry/UNIONS_DR6/${field_name}
+      echo bash -xv @RUNROOT@/@SCRIPTPATH@/check_fail.sh /arc/projects/unions/catalogues/unions/GAaP_photometry/UNIONS_DR6/${field_name}
   fi
 done
 
