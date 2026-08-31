@@ -110,3 +110,16 @@ then
 	rm -rf $md/${tile}_ugriz.mask.fits*
     fi
 fi
+
+# Check MERGE failure.
+for band in u g r i z z2
+do
+    if [ $md/$band/${tile}_${band}_smart_full.cat -nt $md/${tile}_ugriz.cat ]
+    then
+	rm -rf \
+	   $md/*griz* \
+	   $md/${tile}_products.txt \
+	   $md/phot_comp* \
+	   $md/BPZ_photoz
+    fi
+done
