@@ -31,6 +31,8 @@ CATDIR=vos:cfis/tiles_DR6/
 #Directory of the ShapePipe catalogues
 #CATDIR2=/arc/home/kilbinger/cosmostat/v2/pre_v2/psfex/DR5/output/run_sp_combined_tile_detection/sextractor_runner/output/
 CATDIR2=/arc/home/hendrik/UNIONS/ShapePipe/
+#Directory of the HSCPipe catalogues
+CATDIR3=vos:cfis/wishes_1/forced_src_csv/
 #Username (default: `whoami`) 
 USER=`whoami`
 #Directory for work
@@ -51,7 +53,9 @@ POINTINGLIST=testtile.txt #ugriz_tiles.txt
 #File containing Deep Spec-z for photo-z comparison 
 DEEPZCAT=/net/home/fohlen11/hendrik/data/DEEP2/DEEP2_specz.cat
 #File containing Seb's spec-z for photo-z comparison 
-ZCAT=/arc/home/hendrik/UNIONS/redshifts/2024-05-07/redshifts-2024-05-07.asc 
+ZCAT=/arc/home/hendrik/UNIONS/redshifts/2024-05-07/redshifts-2024-05-07.asc
+#Table to translate HSCPipe skytileID into UNIONS xxx.yyy
+HSCSKYIDLIST=/arc/home/hendrik/UNIONS/radec_center_new_unions_tracts_cfis_with_xxx_yyy.lis
 #Machine type
 MACHINE=Linux_64 # can be seen using `uname`
 #THELI Path 
@@ -72,8 +76,8 @@ OPTLIST="NOCONFIG PACKROOT RUNROOT RUNTIME SURVEY USER \
   POINTINGLIST POINTINGLIMITSFILE \
   THELIPATH THELIPACKVERS NTHREAD \
   REFRESHRATE LOGFILE \
-  MACHINE DEEPZCAT ZCAT \
-  CATDIR CATDIR2 IMDIR"
+  MACHINE DEEPZCAT ZCAT HSCSKYIDLIST\
+  CATDIR CATDIR2 CATDIR3 IMDIR"
 #}}}
 
 #Read any command line options  {{{

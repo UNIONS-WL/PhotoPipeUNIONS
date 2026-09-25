@@ -69,6 +69,10 @@ do
       cats_dir2=${2} # Catalogue directory where the ShapePipe catalogues live.
       shift 2
       ;;
+    -cd3)
+      cats_dir3=${2} # Catalogue directory where the ShapePipe catalogues live.
+      shift 2
+      ;;
     -id)
       image_dir=${2} # Directory where the images live.
       shift 2
@@ -120,11 +124,17 @@ cat_LDAC=${mdfield}/CFIS.${xxx}.${yyy}.r.ldac.cat
 phot_cat2=${cats_dir2}/sexcat-${xxx}-${yyy}.fits
 cat_LDAC2=${mdfield}/CFIS_SP.${xxx}.${yyy}.r.ldac.cat
 
+### Paths to the HSCPipe catalogues.
+skytileID=`awk '{if ($4=='$xxx' && $5=='$yyy') print $1}' @HSCSKYIDLIST@`
+phot_cat3=${cats_dir3}/forced_src-HSC-Z-${skytileID}-0,0.csv
+phot_cat3_local=${mdfield}/forced_src-HSC-Z-${skytileID}-0,0.csv
+cat_LDAC3=${mdfield}/HSCPipe.${xxx}.${yyy}.z.ldac.cat
+
 ##################################
 ### Here the real work starts. ###
 ##################################
 
-### Convert MegaPipe ASCII catalogue into 
+### Convert MegaPipe ASCII and ShapePipe FITS catalogues 
 for mode in ${MODE}
 do
     if [ "${mode}" = "CONVERT" ]; then
@@ -301,7 +311,8 @@ do
 	# HSC z-band
 	filter=z
 	prefix=WISHES
-	base=$image_dir/wishes_1/coadd_gold/${prefix}.${xxx}.${yyy}.${filter}
+	xxx2=`echo $xxx|sed 's/^0*//'`
+	base=$image_dir/wishes_1/coadd_gold/${prefix}.${xxx2}.${yyy}.${filter}
 	set +e
 	vls --vos-debug $base.fits >& /dev/null
 	if [ "$?" -eq "0" ]
@@ -332,6 +343,34 @@ do
 	    set -e
 	    echo -n ic -p -32 -c 10000 10000 \'0\' \
 		 \>$md/$field_name/$filter/${field_name}_${filter}.weight.fits \;
+	fi
+	echo sleep 1
+    fi
+done
+
+### Convert HSCPipe CSV catalogue (can only be run after images are available, i.e. after PREPARE) 
+for mode in ${MODE}
+do
+    if [ "${mode}" = "CONVERTHSC" ]; then
+	if [ ! -e $cat_LDAC3 ]
+	then
+	    if [ ! -s $phot_cat3_local ]
+	    then
+		#echo -n vcp --cert=$HOME/cadcproxy.pem --vos-debug $phot_cat $phot_cat_local \;
+		echo -n vcp --vos-debug $phot_cat3 $phot_cat3_local \;
+	    fi
+	    echo -n echo \;
+	    echo -n echo Copy done.\;
+	    echo -n echo \;
+	    if [ -s $md/$field_name/z/${field_name}_z.fits ]
+	    then
+		echo -n bash @RUNROOT@/@SCRIPTPATH@/convert_HSCPipe_cat.sh \
+		     $mdfield \
+		     $phot_cat3_local \
+		     $cat_LDAC3 \
+		     $md/$field_name/z/${field_name}_z.fits \;
+	    fi
+	    #echo -n rm -f $phot_cat3_local \;
 	fi
 	echo sleep 1
     fi
@@ -1223,6 +1262,9 @@ do
 	    echo -n gzip -c ${mdfield}/${field_name}_ugriz.mask.fits \
 		 \> ${mdfield}/${field_name}_ugriz.mask.fits.gz \;
 	fi
+	echo -n python3 @RUNROOT@/@SCRIPTPATH@/mask_fractions.py \
+	     ${mdfield}/${field_name}_ugriz.mask.fits.gz \
+	     \> ${mdfield}/${field_name}_ugriz_mask_fractions.txt \;
 	if [ ! -s ${mdfield}/r/${field_name}_r_maskstars.reg ]
 	then
 	    #echo -n cd /arc/home/hendrik/src/automask/scripts/Linux_64 \;
