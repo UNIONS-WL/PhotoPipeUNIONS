@@ -31,9 +31,9 @@ do
 	#curl -E /arc/home/hendrik/.ssl/cadcproxy.pem https://ws-uv.canfar.net/skaha/v0/session>@RUNROOT@/sessions.txt
 	if [ $? -eq 0 ]
 	then
-	    #nsession_live=`grep -e Running -e Pending @RUNROOT@/sessions.txt|grep -c headless`
-	    nsession_live=`grep -c -e Running -e Pending @RUNROOT@/sessions.txt`
-	    nsession_live=$[$nsession_live-1]
+	    nsession_live=`grep -e Running -e Pending @RUNROOT@/sessions.txt|grep -c headless`
+	    #nsession_live=`grep -c -e Running -e Pending @RUNROOT@/sessions.txt`
+	    #nsession_live=$[$nsession_live-1]
 	    if [ $nsession_live -ge $nsession ]
 	    then
 		echo -e '\e[1A\e[KMaximum number of '$nsession' sessions running/pending. Waiting.'
