@@ -25,14 +25,14 @@ filters=ugriz
 #				       OBJECTS \
 #				       $FILES
 
-#@RUNROOT@/INSTALL/anaconda2/bin/python @RUNROOT@/@SCRIPTPATH@/QC/r_numbercounts.py \
-#				       $md/UNIONS100_${filters}_photoz_ext.cat \
-#				       Z_B \
-#				       MAG_AUTO \
-#				       9.9 \
-#				       98.0 \
-#				       UNIONS100 \
-#				       $md/UNIONS100_${filters}_photoz_ext_nc
+@RUNROOT@/INSTALL/anaconda2/bin/python @RUNROOT@/@SCRIPTPATH@/QC/r_numbercounts.py \
+				       $md/UNIONS100_${filters}_photoz_ext.cat \
+				       Z_B \
+				       MAG_AUTO \
+				       9.9 \
+				       98.0 \
+				       UNIONS100-r \
+				       $md/UNIONS100_${filters}_photoz_ext_nc
 
 @RUNROOT@/INSTALL/anaconda2/bin/python @RUNROOT@/@SCRIPTPATH@/QC/r_numbercounts.py \
 				       $md/UNIONS100_${filters}_photoz_ext.cat \
@@ -40,5 +40,14 @@ filters=ugriz
 				       MAG_GAAP_i \
 				       9.9 \
 				       98.0 \
-				       UNIONS100 \
+				       UNIONS100-i \
 				       $md/UNIONS100_${filters}_photoz_ext_nci
+
+@RUNROOT@/INSTALL/anaconda2/bin/python @RUNROOT@/@SCRIPTPATH@/QC/r_numbercounts.py \
+				       $md/UNIONS100_${filters}_photoz_ext.cat \
+				       Z_B \
+				       MAG_GAAP_z2 \
+				       9.9 \
+				       98.0 \
+				       UNIONS100-z2 \
+				       $md/UNIONS100_${filters}_photoz_ext_ncz

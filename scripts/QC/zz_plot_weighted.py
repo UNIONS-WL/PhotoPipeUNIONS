@@ -37,32 +37,37 @@ def weighted_NMAD(values, weights):
 catalogue_file = sys.argv[1]
 z_spec_key = sys.argv[2]
 z_phot_key = sys.argv[3]
-r_mag_key = sys.argv[4]
+mag_key = sys.argv[4]
 ZBmax = float(sys.argv[5])
-rmax = float(sys.argv[6])
+magmax = float(sys.argv[6])
 label = sys.argv[7]
 outbase = sys.argv[8]
-r_hist_file = sys.argv[9]
+hist_file = sys.argv[9]
 
 catalogue = pyfits.open(catalogue_file)
 catdata_tmp = catalogue[1].data
 ZBmask = np.less(catdata_tmp.field(z_phot_key),ZBmax)
-rmask = np.less(catdata_tmp.field(r_mag_key),rmax)
+rmask = np.less(catdata_tmp.field(mag_key),magmax)
 zmask = np.greater(catdata_tmp.field(z_spec_key),0.01)
 zmask2 = np.less(catdata_tmp.field(z_spec_key),10.)
 catdata = catdata_tmp[ZBmask*rmask*zmask*zmask2]
 z_spec = catdata.field(z_spec_key)
 z_phot = catdata.field(z_phot_key)
-r_mag = catdata.field(r_mag_key)
+mag = catdata.field(mag_key)
+
+if mag_key == "MAG_GAAP_z":
+    mag2 = catdata.field("MAG_GAAP_z2")
+    z_unavailable = (mag==-99.0)
+    mag[z_unavailable] = mag2[z_unavailable]
 
 #print(np.sum(z_spec>1.5))
 
-r_hist = np.loadtxt(r_hist_file)
-r_hist_spec = np.histogram(r_mag, bins=20, range=(15.,25.), normed=True)
-weight_hist = np.nan_to_num(r_hist[:,2]/r_hist_spec[0])
+hist = np.loadtxt(hist_file)
+hist_spec = np.histogram(mag, bins=20, range=(15.,25.), normed=True)
+weight_hist = np.nan_to_num(hist[:,2]/hist_spec[0])
 #print weight_hist
 weight_hist[np.greater(weight_hist,1E6)] = 0.
-weight = np.interp(r_mag, (r_hist[:,0]+r_hist[:,1])/2., weight_hist)
+weight = np.interp(mag, (hist[:,0]+hist[:,1])/2., weight_hist)
 
 Delta_z = z_spec - z_phot
 Delta_z_scaled = Delta_z / (1+z_spec)
@@ -148,12 +153,12 @@ plt.savefig(outbase+"_zlt7.png")
 stats = {}
 for statistic in ('bias', 'NMAD', 'outlier rate', 'outlier rate2'):
     stats[statistic] = {}
-    for variable in ('z_spec', 'z_phot', 'r_mag'):
+    for variable in ('z_spec', 'z_phot', 'mag'):
         stats[statistic][variable] = np.zeros(20)
 
 z_spec_list = []
 z_phot_list = []
-r_mag_list = []
+mag_list = []
 
 for index in range(20):
     z_spec_low = index / 10.
@@ -196,25 +201,25 @@ for index in range(20):
     else:
         stats['outlier rate2']['z_phot'][index] = 0.
 
-    r_mag_low = 17. + index / 2.
-    r_mag_list.append(r_mag_low+0.25)
-    r_mag_high = r_mag_low + 0.5
-    r_mag_filter = np.logical_and(np.greater(r_mag,r_mag_low), np.less_equal(r_mag,r_mag_high))
-    Delta_z_scaled_filtered = Delta_z_scaled[r_mag_filter]
-    weight_filtered = weight[r_mag_filter]
+    mag_low = 17. + index / 2.
+    mag_list.append(mag_low+0.25)
+    mag_high = mag_low + 0.5
+    mag_filter = np.logical_and(np.greater(mag,mag_low), np.less_equal(mag,mag_high))
+    Delta_z_scaled_filtered = Delta_z_scaled[mag_filter]
+    weight_filtered = weight[mag_filter]
     if np.sum(weight_filtered>0):
-        stats['bias']['r_mag'][index] = weighted_median(Delta_z_scaled_filtered,weight_filtered)
-        stats['NMAD']['r_mag'][index] = weighted_NMAD(Delta_z_scaled_filtered,weight_filtered)
+        stats['bias']['mag'][index] = weighted_median(Delta_z_scaled_filtered,weight_filtered)
+        stats['NMAD']['mag'][index] = weighted_NMAD(Delta_z_scaled_filtered,weight_filtered)
     outlier015_filtered = np.greater(np.abs(Delta_z_scaled_filtered),0.15)
     if float(outlier015_filtered.shape[0]) > 0:
-        stats['outlier rate']['r_mag'][index] = (float(np.sum(weight_filtered[outlier015_filtered])) / float(np.sum(weight_filtered)) * 100.)
+        stats['outlier rate']['mag'][index] = (float(np.sum(weight_filtered[outlier015_filtered])) / float(np.sum(weight_filtered)) * 100.)
     else:
-        stats['outlier rate']['r_mag'][index] = 0.
+        stats['outlier rate']['mag'][index] = 0.
     outlier025_filtered = np.greater(np.abs(Delta_z_scaled_filtered),0.25)
     if float(outlier025_filtered.shape[0]) > 0:
-        stats['outlier rate2']['r_mag'][index] = (float(np.sum(weight_filtered[outlier025_filtered])) / float(np.sum(weight_filtered)) * 100.)
+        stats['outlier rate2']['mag'][index] = (float(np.sum(weight_filtered[outlier025_filtered])) / float(np.sum(weight_filtered)) * 100.)
     else:
-        stats['outlier rate2']['r_mag'][index] = 0.
+        stats['outlier rate2']['mag'][index] = 0.
 
 #plt.rc('font', size=5)
 
@@ -241,27 +246,27 @@ ax[0,0].plot(z_spec_list,stats['bias']['z_spec'])
 ax[0,0].plot([0.,2.],[0.,0.], "k:", color="black")
 ax[0,1].plot(z_phot_list,stats['bias']['z_phot']) #, color="black")
 ax[0,1].plot([0.,2.],[0.,0.], "k:", color="black")
-ax[0,2].plot(r_mag_list,stats['bias']['r_mag']) #, color="black")
+ax[0,2].plot(mag_list,stats['bias']['mag']) #, color="black")
 ax[0,2].plot([16.,25.],[0.,0.], "k:", color="black")
 
 ax[1,0].plot(z_spec_list,stats['NMAD']['z_spec']) #, color="black")
 ax[1,1].plot(z_phot_list,stats['NMAD']['z_phot']) #, color="black")
-ax[1,2].plot(r_mag_list,stats['NMAD']['r_mag']) #, color="black")
+ax[1,2].plot(mag_list,stats['NMAD']['mag']) #, color="black")
 
 ax[2,0].plot(z_spec_list,stats['outlier rate']['z_spec']) #, color="black")
 ax[2,0].plot(z_spec_list,stats['outlier rate2']['z_spec']) #, color="black")
 ax[2,1].plot(z_phot_list,stats['outlier rate']['z_phot']) #, color="black")
 ax[2,1].plot(z_phot_list,stats['outlier rate2']['z_phot']) #, color="black")
-ax[2,2].plot(r_mag_list,stats['outlier rate']['r_mag']) #, color="black")
-ax[2,2].plot(r_mag_list,stats['outlier rate2']['r_mag']) #, color="black")
+ax[2,2].plot(mag_list,stats['outlier rate']['mag']) #, color="black")
+ax[2,2].plot(mag_list,stats['outlier rate2']['mag']) #, color="black")
 
 #ax[3,0].hist(z_spec, bins=10, range=(0.,1.),   density=True)
 #ax[3,1].hist(z_phot, bins=10, range=(0.,1.),   density=True)
-#ax[3,2].hist(r_mag,  bins=10, range=(17.,22.), density=True)
+#ax[3,2].hist(mag,  bins=10, range=(17.,22.), density=True)
 ax[3,0].hist(z_spec, bins=20, range=(0.,2.),   normed=True, log=True, histtype="step")
 ax[3,1].hist(z_phot, bins=20, range=(0.,2.),   normed=True, log=True, histtype="step")
-ax[3,2].hist(r_mag,  bins=20, range=(15.,25.), normed=True, log=True, histtype="step")
-ax[3,2].plot((r_hist[:,0]+r_hist[:,1])/2,r_hist[:,2])
+ax[3,2].hist(mag,  bins=20, range=(15.,25.), normed=True, log=True, histtype="step")
+ax[3,2].plot((hist[:,0]+hist[:,1])/2,hist[:,2])
 
 #ax.plot([0.,7.],[0.15,7.9], "k:")
 #ax.plot([0.15,7.9],[0.,7], "k:")

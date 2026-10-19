@@ -29,8 +29,8 @@ np.savetxt(outbase+".txt",np.transpose(np.stack((r_hist[1][:-1],r_hist[1][1:],r_
 
 fig, ax = plt.subplots(1)
 plt.title(label)
-ax.set_xlabel(r"$r$")
-ax.set_ylabel(r"$N(z)$")
+ax.set_xlabel(r"mag")
+ax.set_ylabel(r"$N(mag)$")
 #ax.set_xlim(0.,1.95)
 #ax.set_ylim(0.,6.95)
 #ax.xaxis.labelpad = -1
