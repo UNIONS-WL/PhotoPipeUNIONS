@@ -119,11 +119,23 @@ A, B, theta = sdss_shape_to_sextractor(
     wcs
 )
 
+A = A + 1E-6
+B = B + 1E-6
+
+theta = theta - 90.
+
+mag = 2.5*np.log10(data["ext_photometryKron_KronFlux_instFlux"])+27.
+magerr = 2.5/data["ext_photometryKron_KronFlux_instFlux"]/np.log(10)*data["ext_photometryKron_KronFlux_instFluxErr"]
+flux_radius = np.sqrt(A*B)
+
 A_col = fits.Column(name='A_WORLD', format='E', array=A)
 B_col = fits.Column(name='B_WORLD', format='E', array=B)
 theta_col = fits.Column(name='THETA_J2000', format='E', array=theta)
+mag_col = fits.Column(name='MAG_AUTO', format='E', array=mag)
+magerr_col = fits.Column(name='MAGERR_AUTO', format='E', array=magerr)
+flux_radius_col = fits.Column(name='FLUX_RADIUS', format='E', array=flux_radius)
 
-new_cols = fits.ColDefs((A_col, B_col, theta_col))
+new_cols = fits.ColDefs((A_col, B_col, theta_col, mag_col, magerr_col, flux_radius_col))
 
 hdu[1] = fits.BinTableHDU.from_columns(cols + new_cols)
 hdu[1].name = 'OBJECTS'

@@ -5,7 +5,7 @@ csv=$2
 ldac=$3
 image=$4
 
-awk 'BEGIN{FS=","; OFS=","}{if (NR>1) print NR-1,$4, $5, $6, $159, $160, $164, $26, $27, $28, $32, $33}' \
+awk 'BEGIN{FS=","; OFS=","}{if (NR>1) print NR-1,$4, $5, $6, $159, $160, $164, $26, $27, $28, $32, $33, $159, $160, 0}' \
      $csv \
      > $csv.tmp1.csv
 
@@ -18,9 +18,9 @@ asctoldac_theli \
     -o $ldac.tmp1 \
     -c @RUNROOT@/@CONFIGPATH@/asctoldac_HSCPipe.conf
 
-python3 @RUNROOT@/@SCRIPTPATH@/convert_HSCPipe_cat.py \
+python3 @RUNROOT@/@SCRIPTPATH@/convert_HSCPipe_cat_2.py \
 	$ldac.tmp1 \
 	$ldac \
 	$image
 
-#rm $csv.tmp1.csv $csv.tmp2.asc $ldac.tmp1
+rm $csv.tmp1.csv $csv.tmp2.asc $ldac.tmp1

@@ -415,7 +415,7 @@ done
 for mode in ${MODE}
 do
     if [ "${mode}" = "GAAP" ]; then
-	for incat in $cat_LDAC $cat_LDAC2
+	for incat in $cat_LDAC3 # $cat_LDAC $cat_LDAC2
 	do
 	    ### Count the number of objects in the photometric catalogue.
 	    if [ -e $incat ]
@@ -440,6 +440,9 @@ do
 		if [ $incat = $cat_LDAC2 ]
 		then
 		    base=${field_name}_SP_${band}
+		elif [ $incat = $cat_LDAC3 ]
+		then
+		    base=${field_name}_HSC_${band}
 		fi
 		# Check for gaussianised images 
 		if [ ! -e ${gaussianised_image} ]
@@ -555,7 +558,7 @@ do
       SDSS_cat=${mdfield}/SDSS/${field_name}_sdssdr10_stars.cat
       if [ -s $SDSS_cat ]
       then
-	  for suffix in "_SP" ""
+	  for suffix in "" # "_HSC" # "_SP" ""
 	  do
 	      ### Loop over all UNIONS bands.
 	      for ending in "" _minaper1p0 #_stars _stars0p7
@@ -588,7 +591,7 @@ do
       PS_cat=${mdfield}/PS/${field_name}_PS1-DR2.cat
       if [ -s $PS_cat ]
       then
-	  for suffix in "_SP" ""
+	  for suffix in "" # "_HSC" # "_SP" ""
 	  do
 	      ### Loop over all UNIONS bands.
 	      for ending in "" _minaper1p0 #_stars _stars0p7
@@ -621,7 +624,7 @@ do
       PGM_cat=${mdfield}/PGM/${field_name}_PGM.cat
       if [ -s $PGM_cat ]
       then
-	  for suffix in "" "_SP"
+	  for suffix in "" # "_HSC" # "" "_SP"
 	  do
 	      ### Loop over all UNIONS bands.
 	      for ending in "" _minaper1p0 #_stars _stars0p7
@@ -651,12 +654,15 @@ done
 for mode in ${MODE}
 do
   if [ "${mode}" = "MERGE" ]; then
-      for incat in $cat_LDAC $cat_LDAC2
+      for incat in $cat_LDAC3 # $cat_LDAC $cat_LDAC2
       do
 	  suffix=""
 	  if [ $incat = $cat_LDAC2 ]
 	  then
 	      suffix="_SP"
+	  elif [ $incat = $cat_LDAC3 ]
+	  then
+	      suffix="_HSC"
 	  fi
 	  if [ ! -s ${mdfield}/${field_name}${suffix}_ugriz.cat ]
 	  then
@@ -806,7 +812,7 @@ for mode in ${MODE}
 do
   if [ "${mode}" = "COMPTILEPOSTMERGE" ]; then
       SDSS_cat=${mdfield}/SDSS/${field_name}_sdssdr10_stars.cat
-      for suffix in "" "_SP"
+      for suffix in "" # "_HSC" # "" "_SP"
       do
 	  if [ -s ${mdfield}/${field_name}${suffix}_ugriz.cat ] && \
 		 [ ! -s ${mdfield}/phot_comp_SDSS/${field_name}${suffix}_ugriz_SDSS_r_offset.asc ]
@@ -828,7 +834,7 @@ for mode in ${MODE}
 do
   if [ "${mode}" = "COMPTILEPSPOSTMERGE" ]; then
       PS_cat=${mdfield}/PS/${field_name}_PS1-DR2.cat
-      for suffix in "" "_SP"
+      for suffix in "" # "_HSC" # "" "_SP"
       do
 	  if [ -s ${mdfield}/${field_name}${suffix}_ugriz.cat ] && \
 		 [ ! -s ${mdfield}/phot_comp_PS/${field_name}${suffix}_ugriz_PS_r_offset.asc ]
@@ -850,7 +856,7 @@ for mode in ${MODE}
 do
   if [ "${mode}" = "COMPTILEPGMPOSTMERGE" ]; then
       PGM_cat=${mdfield}/PGM/${field_name}_PGM.cat
-      for suffix in "" "_SP"
+      for suffix in "" # "_HSC" # "" "_SP"
       do
 	  if [ -s ${mdfield}/${field_name}${suffix}_ugriz.cat ] && \
 		 [ ! -s ${mdfield}/phot_comp_PGM/${field_name}${suffix}_ugriz_PGM_r_offset.asc ]
@@ -871,7 +877,7 @@ for mode in ${MODE}
 do
   if [ "${mode}" = "BPZ" ]; then
       #echo -n "set -e ; "
-      for suffix in "" "_SP"
+      for suffix in "" # "_HSC" # "" "_SP"
       do
 	  for filters in ugriz griz # ugri # uriz
 	  do
@@ -1181,7 +1187,7 @@ do
     if [ "${mode}" = "COMPTILEZ" ]; then
 	for filters in  ugriz griz # ugri #uriz # ugri
 	do
-	    for suffix in "" "_SP"
+	    for suffix in "" # "_HSC" # "" "_SP"
 	    do
 		for recalib in "" #"_recalibSDSSplus" #"_recalibSDSS" #"_recalibplus" # "_recalib" #""
 		do
