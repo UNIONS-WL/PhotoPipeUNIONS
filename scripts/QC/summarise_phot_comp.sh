@@ -8,12 +8,12 @@ wd=/arc/projects/unions/catalogues/unions/GAaP_photometry/UNIONS_DR6_QC/phot_com
 
 test ! -d $wd && mkdir -p $wd
 
-for survey in  SDSS #PGM #PS
+for survey in PGM # SDSS # #PS
 do
     echo $survey
     for MERGE in MERGE #preMERGE
     do
-	for filter in u # g r i z z2 #u
+	for filter in g r i z z2 #u
 	do
 	    echo $filter
 	    rm $wd/${filter}_${survey}_offsets_tile_$MERGE.asc
@@ -23,6 +23,7 @@ do
 		do
 		    tile=`dirname $file|cut -d "/" -f 10|cut -d "." -f 2-3`
 		    WCS=`@RUNROOT@/INSTALL/anaconda2/bin/python @RUNROOT@/@SCRIPTPATH@/translate_THELI2MP.py $tile|sed 's/\_/\ /g'`
+		    #WCS=`grep $tile ~/UNIONS/status_2026-06-03/r_tiles.wcs.txt | awk '{print $2, $3}'`
 		    { 
 			echo -n $tile $WCS" "
 	    		awk '!/nan/' $file
@@ -33,6 +34,7 @@ do
 		do
 		    tile=`dirname $file|cut -d "/" -f 10|cut -d "." -f 2-3`
 		    WCS=`@RUNROOT@/INSTALL/anaconda2/bin/python @RUNROOT@/@SCRIPTPATH@/translate_THELI2MP.py $tile|sed 's/\_/\ /g'`
+		    #WCS=`grep $tile ~/UNIONS/status_2026-06-03/r_tiles.wcs.txt | awk '{print $2, $3}'`
 		    { 
 			echo -n $tile $WCS" "
 	    		awk '!/nan/' $file
